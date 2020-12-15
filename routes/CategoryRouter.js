@@ -1,14 +1,17 @@
 const express = require("express")
 const CategoryController = require("../controllers/CategoryController")
 const router = express.Router()
+const validations = require("../middleware/validationMiddleware")
 
-router.post("/addCategory", CategoryController.addCategory)
+router.post("/addCategory", validations.categoryValidation, CategoryController.addCategory)
 
 router.get("/getCategory/:id", CategoryController.getCategory)
 
-router.post("/updateCategory", CategoryController.updateCategory)
+router.post("/updateCategory", validations.categoryValidation, CategoryController.updateCategory)
 
 router.get("/deleteCategory/:id", CategoryController.deleteCategory)
+router.get("/destroyCategory/:id", CategoryController.destroyCategory)
+
 
 router.get("/", CategoryController.getCategories)
 
