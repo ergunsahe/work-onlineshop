@@ -119,7 +119,7 @@ exports.getCategories = async (req, res) => {
 exports.destroyCategory = async (req, res) =>{
     try {
         await Category.deleteOne({_id: req.params.id})
-        res.status(200).send("Category is completly deleted")
+        res.status(200).send("Category is completely deleted")
     } catch (error) {
         return res.status(500).json({errors: [{message:err.message}]})
     }
