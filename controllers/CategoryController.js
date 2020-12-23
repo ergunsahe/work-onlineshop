@@ -1,26 +1,21 @@
 const Category = require("../models/Category")
 const {validationResult} = require("express-validator")
+const checkError = require("../helper/checkError")
 
 exports.addCategory = async (req, res) => {
     try {
         //field validation
         const {categoryName, description} = req.body;
         const validationErr = validationResult(req)
-        if (validationErr?.errors?.length > 0) {
-            return res.status(400).json({errors:validationErr.array()})
-        }
+        checkError(res, validationErr?.errors?.length > 0, validationErr.array())
+        
         // category exist check
         const existCategory = await Category.findOne({categoryName:categoryName});
-        if (existCategory) {
-            return res.status(400).json({errors:[{message: "Category already exist"}]})
-
-        }
+        checkError(res, existCategory, "Category already exist")
+        
         
         //save category
-        const category = new Category({
-            categoryName,
-            description,
-        })
+        const category = new Category(req.body)
         // const category = new Category(req.body)
 
         const addedCategory = await category.save({new: true});
@@ -28,8 +23,9 @@ exports.addCategory = async (req, res) => {
         // res.status(200).send("Category is added")
         res.status(200).json(addedCategory)
 
-    } catch (error) {
-        return res.status(500).json({errors: [{message: error.message}]})
+    } catch (err) {
+        checkError(res, err, err.message, 500)
+        
     }
     
 }
@@ -38,8 +34,9 @@ exports.getCategory = async (req, res) => {
     try {
         const category = await Category.findById({_id: req.params.id})
         res.status(200).json(category)
-    } catch (error) {
-        return res.status(500).json({errors: [{message:error.message}]})
+    } catch (err) {
+        checkError(res, err, err.message, 500)
+        
     }
 }
 
@@ -50,9 +47,8 @@ exports.updateCategory = async (req, res) => {
     try {
         //validation
         const validationErr = validationResult(req)
-        if (validationErr?.errors?.length > 0) {
-            return res.status(400).json({errors:validationErr.array()})
-        }
+        checkError(res, validationErr?.errors?.length > 0, validationErr.array())
+        
 
         //update
         const updatedCategory = await Category.findOneAndUpdate(
@@ -62,7 +58,7 @@ exports.updateCategory = async (req, res) => {
                 // description: req.body.description
                 ...req.body,
                 status: "updated",
-                updateddate: Date.now
+                
             },
             {
                 new: true,
@@ -73,7 +69,8 @@ exports.updateCategory = async (req, res) => {
         res.status(200).json(updatedCategory)
 
     } catch (err) {
-        return res.status(500).json({errors: [{message:err.message}]})
+        checkError(res, err, err.message, 500)
+        
     }
 }
 
@@ -89,7 +86,7 @@ exports.deleteCategory = async (req, res) => {
             {_id:req.params.id},
             {
                 status: "deteled",
-                deletedDate: Date.now
+                deletedAt: Date.now
             },
             {
                 new: true,
@@ -98,7 +95,8 @@ exports.deleteCategory = async (req, res) => {
         // res.status(200).json("Category deleted")
         res.status(200).json(deletedCategory)
     } catch (err) {
-        return res.status(500).json({errors: [{message:err.message}]})
+        checkError(res, err, err.message, 500)
+        
     }
 }
 
@@ -112,7 +110,7 @@ exports.getCategories = async (req, res) => {
         const categories = await Category.find({}).where("status", /[^deleted]/).select("-status")
         res.status(200).json(categories)
     } catch (err) {
-        return res.status(500).json({errors: [{message:err.message}]})
+        checkError(res, err, err.message, 500);
     }
 }
 
@@ -120,7 +118,9 @@ exports.destroyCategory = async (req, res) =>{
     try {
         await Category.deleteOne({_id: req.params.id})
         res.status(200).send("Category is completely deleted")
-    } catch (error) {
-        return res.status(500).json({errors: [{message:err.message}]})
+    } catch (err) {
+        checkError(res, err, err.message, 500);
     }
 }
+
+

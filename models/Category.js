@@ -13,16 +13,11 @@ const schema = new Schema({
     description: {
         type: String,
     },
-    createdDate: {
-        type: Date,
-        default: Date.now,
-    },
-    updatedDate: {
-        type: Date,
-    },
-    deletedDate: {
+    
+    deletedAt: {
         type: Date
-    }
-})
+    },
+    products: [{type:Schema.Types.ObjectId, ref:"Product"}]
+}, {timestamps:true, collection:"Categories"})
 
 module.exports = Category = mongoose.model("Category", schema)

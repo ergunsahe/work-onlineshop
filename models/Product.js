@@ -21,23 +21,18 @@ const schema = new Schema({
         type: Number,
         default: 0,
     },
-    categoryId: {
-        type: String,
+    category: {
+        type: Schema.Types.ObjectId,
+        ref: "Category"
     },
     status: {
         type: String,
         default: "created"
     },
-    createdDate: {
-        type: Date,
-        default: Date.now,
-    },
-    updatedDate: {
-        type: Date,
-    },
-    deletedDate: {
+    
+    deletedAt: {
         type: Date
     }
-})
+}, {timestamps:true, collection:"Products"})
 
 module.exports = Product = mongoose.model("Product", schema)

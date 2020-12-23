@@ -1,8 +1,9 @@
 const express= require("express")
 const router = express.Router()
 const ProductController = require("../controllers/ProductController")
+const {productValidation }= require("../middleware/validationMiddleware")
 
-router.post("/addProduct", ProductController.addProduct)
+router.post("/addProduct", productValidation, ProductController.addProduct)
 
 router.get("/getProduct/:id", ProductController.getProduct)
 
